@@ -51,10 +51,13 @@ for(var i = 0; i < 10; i++){
 }
 
 var scheduleNextTweet = function(){
+  console.log('Generating Random Tweet!');
   generateRandomTweet();
   setTimeout(scheduleNextTweet, Math.random() * 1500);
 };
 scheduleNextTweet();
+
+
 
 // utility function for letting students add "write a tweet" functionality
 // (note: not used by the rest of this file.)
