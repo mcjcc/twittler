@@ -3,28 +3,101 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+    .username{
+      cursor: pointer;
+    }
+    .new-tweets{
+      overflow-y:scroll;
+      height: 300px;
+    }
+    .new-tweets{
+      margin: 50px;
+    }
+    </style>
+
   </head>
   <body>
-    <button class="get-tweet-button">
-      Discover Tweets
-    </button>
+    <div class="container">
+      <button class="btn get-tweet-button">
+        Discover Next Ten Tweets
+      </button>
+      <h1>New Tweets</h1>
+      <div class="new-tweets">
+      </div>
+      <div class="usernames">
+
+      </div>
+      <h2>User Tweets</h2>
+      <div class="user-tweets">
+      </div>
+
+    </div>
+
     <script>
 
      $(document).ready(function(){
-        var $body = $('body');
+        var $box = $('.new-tweets');
+        var allTweetsArr = streams.home;
+        var allNamesArr;
 
-       function getTenTweets() {
-         console.log('fired');
+        function getNames(users){
+          var allNamesArr = [];
+          for (var key in users) {
+            allNamesArr.push(key);
+          }
+          return allNamesArr;
+        }
+
+        function getUsersTweets(username){
+          var userTweetsArr = [];
+          userTweetsArr = streams.users[username];
+
+          $userTweetsBox = $('.user-tweets');
+          $userTweetsBox.html('');
+
+          var index = userTweetsArr.length - 1;
+
+          while(index >= 0){
+            var tweet = userTweetsArr[index];
+            var $tweet = $('<div></div>');
+            $tweet.text('@' + tweet.user + ': ' + tweet.message + ' ;Tweet created at: ' + tweet.created_at) ;
+            $tweet.prependTo($userTweetsBox);
+            index -= 1;
+          }
+
+        }
+
+       function getNextTenTweets() {
+         console.log('getNextTenTweets fired');
          var index = streams.home.length - 1;
           while(index >= 0){
-            var tweet = streams.home[index];
+            var tweet = streams.home.shift();
+            // var tweet = streams.home[index];
             var $tweet = $('<div></div>');
-            $tweet.text('@' + tweet.user + ': ' + tweet.message);
-            $tweet.appendTo($body);
+            $tweet.text('@' + tweet.user + ': ' + tweet.message + ' ;Tweet Created at: ' + tweet.created_at);
+            $tweet.prependTo($box);
             index -= 1;
           }
         }
-        $(".get-tweet-button").on('click', getTenTweets);
+
+        allNamesArr = getNames(streams.users);
+        // console.log(allNamesArr);
+        var $usernames = $('.usernames');
+        allNamesArr.forEach(function(e){
+          var $name = $('<div class="username "></div>');
+          $name.text(e);
+          // console.log($name);
+          $name.appendTo($usernames);
+        });
+
+        // event listeners:
+
+        $(".get-tweet-button").on('click', getNextTenTweets);
+        $(".username").on('click', function(){
+          getUsersTweets($(this).text())
+        });
 
      });
 
